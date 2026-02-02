@@ -19,5 +19,6 @@ app.use("/companies", companyRoutes);
 app.use("/exports", exportRoutes);
 app.use("/uploads", express.static("uploads"));
 app.use("/uploads", uploadRoutes);
+app.use(express.static("public"));
 
 export default app;
