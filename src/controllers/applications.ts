@@ -78,7 +78,7 @@ export const submitApplication = async (
       submittedAt: new Date(),
       responses: {
         create: activeFields.map((field) => ({
-          fieldId: field.id,
+          field: { connect: { id: field.id } },
           value: responses[field.id] ?? null,
           fileUrl: fileUrls?.[field.id],
         })),

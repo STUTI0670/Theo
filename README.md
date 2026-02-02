@@ -10,6 +10,8 @@ npm run prisma:generate
 npm run dev
 ```
 
+Open `http://localhost:4000` to use the lightweight testing UI bundled in `public/`.
+
 ## Key Concepts
 
 - **Dynamic application fields** are stored as metadata (`DynamicField`) and **never hardcoded**.
