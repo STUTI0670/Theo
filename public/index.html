@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Placement Portal Admin & Student Console</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="hero">
+      <div>
+        <h1>Placement Portal Console</h1>
+        <p>
+          Use this UI to test authentication, student profiles, company
+          management, dynamic fields, and applications.
+        </p>
+      </div>
+      <div class="connection">
+        <label>
+          API Base URL
+          <input id="apiBaseUrl" type="text" value="http://localhost:4000" />
+        </label>
+        <button id="saveBaseUrl">Save</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="card">
+        <h2>Auth</h2>
+        <div class="grid">
+          <form id="registerForm">
+            <h3>Register</h3>
+            <input name="email" type="email" placeholder="Email" required />
+            <input
+              name="password"
+              type="password"
+              placeholder="Password (min 8 chars)"
+              required
+            />
+            <select name="role">
+              <option value="STUDENT">Student</option>
+              <option value="COORDINATOR">Coordinator</option>
+            </select>
+            <button type="submit">Register</button>
+          </form>
+
+          <form id="loginForm">
+            <h3>Login</h3>
+            <input name="email" type="email" placeholder="Email" required />
+            <input
+              name="password"
+              type="password"
+              placeholder="Password"
+              required
+            />
+            <button type="submit">Login</button>
+          </form>
+        </div>
+        <div class="token">
+          <label>JWT Token</label>
+          <textarea id="token" rows="3" placeholder="Paste token here"></textarea>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Student Profile</h2>
+        <form id="profileForm" class="grid">
+          <input name="name" placeholder="Name" required />
+          <input name="rollNumber" placeholder="Roll Number" required />
+          <input name="branch" placeholder="Branch" required />
+          <input name="cgpa" type="number" step="0.01" placeholder="CGPA" />
+          <input name="phone" placeholder="Phone" required />
+          <input name="resumeUrl" placeholder="Resume URL (optional)" />
+          <input
+            name="portfolioLinks"
+            placeholder="Portfolio links (comma separated)"
+          />
+          <button type="submit">Save Profile</button>
+        </form>
+        <button id="loadProfile">Load My Profile</button>
+      </section>
+
+      <section class="card">
+        <h2>Company Management (Coordinator)</h2>
+        <form id="companyForm" class="grid">
+          <input name="name" placeholder="Company Name" required />
+          <input name="jobRole" placeholder="Job Role" required />
+          <input name="jobDescription" placeholder="Job Description" />
+          <input name="minCgpa" type="number" step="0.01" placeholder="Min CGPA" />
+          <input
+            name="allowedBranches"
+            placeholder="Allowed branches (comma separated)"
+            required
+          />
+          <input name="applicationStart" type="datetime-local" required />
+          <input name="applicationDeadline" type="datetime-local" required />
+          <label class="checkbox">
+            <input name="isPublished" type="checkbox" />
+            Publish now
+          </label>
+          <button type="submit">Create Company</button>
+        </form>
+
+        <div class="grid">
+          <div>
+            <h3>Companies</h3>
+            <button id="loadCompanies">Refresh Companies</button>
+            <ul id="companiesList"></ul>
+          </div>
+          <form id="fieldForm">
+            <h3>Dynamic Field</h3>
+            <input name="companyId" placeholder="Company ID" required />
+            <input name="label" placeholder="Field Label" required />
+            <input name="description" placeholder="Field Description" />
+            <select name="type">
+              <option value="SHORT_TEXT">Short text</option>
+              <option value="LONG_TEXT">Long text</option>
+              <option value="NUMBER">Number</option>
+              <option value="DROPDOWN">Dropdown</option>
+              <option value="MULTIPLE_CHOICE">Multiple choice</option>
+              <option value="CHECKBOX">Checkbox</option>
+              <option value="FILE_UPLOAD">File upload</option>
+            </select>
+            <input
+              name="options"
+              placeholder="Options (comma separated)"
+            />
+            <input
+              name="displayOrder"
+              type="number"
+              placeholder="Display order"
+              required
+            />
+            <label class="checkbox">
+              <input name="required" type="checkbox" />
+              Required
+            </label>
+            <button type="submit">Add Field</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Student Applications</h2>
+        <div class="grid">
+          <form id="eligibilityForm">
+            <h3>Check Eligibility</h3>
+            <input name="companyId" placeholder="Company ID" required />
+            <button type="submit">Check</button>
+          </form>
+          <form id="applyForm">
+            <h3>Submit Application</h3>
+            <input name="companyId" placeholder="Company ID" required />
+            <textarea
+              name="responses"
+              rows="4"
+              placeholder='Responses JSON: {"fieldId":"value"}'
+            ></textarea>
+            <textarea
+              name="fileUrls"
+              rows="2"
+              placeholder='File URLs JSON: {"fieldId":"https://..."}'
+            ></textarea>
+            <button type="submit">Apply</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Exports & Files</h2>
+        <div class="grid">
+          <form id="exportCsvForm">
+            <h3>Export CSV</h3>
+            <input name="companyId" placeholder="Company ID" required />
+            <button type="submit">Download CSV</button>
+          </form>
+          <form id="exportSheetsForm">
+            <h3>Export Sheets Payload</h3>
+            <input name="companyId" placeholder="Company ID" required />
+            <button type="submit">Fetch Payload</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Activity Log</h2>
+        <pre id="log"></pre>
+      </section>
+    </main>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
