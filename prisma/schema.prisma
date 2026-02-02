@@ -1,0 +1,137 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  COORDINATOR
+  STUDENT
+}
+
+enum ApplicationStatus {
+  APPLIED
+  WITHDRAWN
+}
+
+enum DynamicFieldType {
+  SHORT_TEXT
+  LONG_TEXT
+  NUMBER
+  DROPDOWN
+  MULTIPLE_CHOICE
+  CHECKBOX
+  FILE_UPLOAD
+}
+
+model User {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  passwordHash  String
+  role          UserRole
+  createdAt     DateTime       @default(now())
+  studentProfile StudentProfile?
+  companies     Company[]      @relation("CompanyCreator")
+  applications  Application[]  @relation("StudentApplications")
+}
+
+model StudentProfile {
+  id             String   @id @default(uuid())
+  userId         String   @unique
+  name           String
+  rollNumber     String   @unique
+  branch         String
+  cgpa           Float
+  phone          String
+  resumeUrl      String?
+  portfolioLinks Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  user           User     @relation(fields: [userId], references: [id])
+}
+
+model Company {
+  id                  String        @id @default(uuid())
+  name                String
+  jobRole             String
+  jobDescription      String?
+  minCgpa             Float
+  allowedBranches     Json
+  otherEligibility    Json?
+  applicationStart    DateTime
+  applicationDeadline DateTime
+  isPublished         Boolean       @default(false)
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+  createdById         String
+  createdBy           User          @relation("CompanyCreator", fields: [createdById], references: [id])
+  dynamicFields       DynamicField[]
+  eligibilityRules    EligibilityRule[]
+  applications        Application[]
+}
+
+model EligibilityRule {
+  id        String   @id @default(uuid())
+  companyId String
+  type      String
+  value     Json
+  company   Company  @relation(fields: [companyId], references: [id])
+}
+
+model DynamicField {
+  id            String          @id @default(uuid())
+  companyId     String
+  label         String
+  description   String?
+  type          DynamicFieldType
+  required      Boolean         @default(false)
+  options       Json?
+  fileConstraints Json?
+  displayOrder  Int
+  isActive      Boolean         @default(true)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  company       Company         @relation(fields: [companyId], references: [id])
+  responses     ApplicationFieldResponse[]
+}
+
+model Application {
+  id          String          @id @default(uuid())
+  companyId   String
+  studentId   String
+  status      ApplicationStatus @default(APPLIED)
+  submittedAt DateTime?
+  createdAt   DateTime        @default(now())
+  company     Company         @relation(fields: [companyId], references: [id])
+  student     User            @relation("StudentApplications", fields: [studentId], references: [id])
+  responses   ApplicationFieldResponse[]
+  files       UploadedFile[]
+
+  @@unique([companyId, studentId])
+}
+
+model ApplicationFieldResponse {
+  id            String   @id @default(uuid())
+  applicationId String
+  fieldId       String
+  value         Json?
+  fileUrl       String?
+  createdAt     DateTime @default(now())
+  application   Application @relation(fields: [applicationId], references: [id])
+  field         DynamicField @relation(fields: [fieldId], references: [id])
+}
+
+model UploadedFile {
+  id            String   @id @default(uuid())
+  applicationId String
+  fieldId       String?
+  url           String
+  fileName      String
+  fileSize      Int
+  mimeType      String
+  createdAt     DateTime @default(now())
+  application   Application @relation(fields: [applicationId], references: [id])
+}
